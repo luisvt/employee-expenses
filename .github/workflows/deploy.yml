@@ -18,6 +18,9 @@ jobs:
         with:
           node-version: '22'  # Specify your Node.js version
 
+      - name: Check if pnpm is installed
+        run: command -v pnpm || npm install -g pnpm
+
       - name: Install dependencies
         run: pnpm install
 
