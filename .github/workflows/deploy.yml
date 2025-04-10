@@ -6,7 +6,8 @@ on:
       - main  # Change this if your default branch is not 'main'
 
 jobs:
-  deploy:
+  # Build job
+  build:
     runs-on: ubuntu-latest
 
     steps:
@@ -27,8 +28,20 @@ jobs:
       - name: Build the project
         run: pnpm run build
 
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
+      - name: Upload static files as artifacts
+        id: deployment
+        uses: actions/upload-pages-artifact@v3
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./build  # Adjust if your build output directory is different
+          path: build
+
+  # Deployment job
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
